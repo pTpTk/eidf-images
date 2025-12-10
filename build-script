@@ -1,1 +1,18 @@
-docker build -t ptptk/eidf:mem-access-pattern --push -f 1.mem-access-pattern/Dockerfile .
+#!/bin/bash
+
+if [[ -z "$1" ]]
+then
+    echo "need to specify image number"
+    exit 1
+fi
+
+image_dir="$(ls | grep $1)"
+if [[ -z "$image_dir" ]]
+then
+    echo "invalid image number"
+    exit 1
+fi
+
+image_name="${image_dir:2}"
+cmd="docker build -t ptptk/eidf:${image_name} --push -f ${image_dir}/Dockerfile ."
+echo $cmd
