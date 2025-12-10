@@ -1,0 +1,1 @@
+docker build -t ptptk/eidf:mem-access-pattern --push -f 1.mem-access-pattern/Dockerfile .
