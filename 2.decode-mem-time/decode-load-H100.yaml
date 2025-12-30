@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: mem-time-h100-
+  labels:
+    kueue.x-k8s.io/queue-name: eidf029ns-user-queue
+    eidf/user: s2780350-infk8s
+spec:
+  completions: 1
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      name: job-test
+    spec:
+      containers:
+      - name: cudasample
+        image: ptptk/eidf:dev
+        imagePullPolicy: Always
+        command: ["bash", "-c"]
+        args:
+          - |
+            git clone https://github.com/pTpTk/flashinfer.git
+            cd flashinfer && git checkout origin/decode-mem-time
+            python -m pip install -v .
+            python unit_tests/decode.py > decode-time-H100.txt
+            sudo mv decode-time-H100.txt /output/
+
+        resources:
+          requests:
+            cpu: 2
+            memory: "1Gi"
+            nvidia.com/gpu: 1
+          limits:
+            cpu: 2
+            memory: "4Gi"
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - name: output-vol
+          mountPath: /output
+      restartPolicy: Never
+      nodeSelector:
+        nvidia.com/gpu.product: NVIDIA-H100-80GB-HBM3
+      volumes:
+      - name: output-vol
+        persistentVolumeClaim:
+          claimName: zeyu-pvc

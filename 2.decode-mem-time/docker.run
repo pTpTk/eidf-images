@@ -1,0 +1,1 @@
+docker run -it -v /home/zeyu/Documents/uoe/proj1/flashinfer:/home/devuser/flashinfer dev
